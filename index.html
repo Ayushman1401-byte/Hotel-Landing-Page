@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grand Horizon Luxury Hotel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --gold: #c5a021;
+            --dark: #1a1a1a;
+            --gray: #f9f9f9;
+            --text: #333;
+        }
+
+        body { font-family: 'Poppins', sans-serif; margin: 0; background: var(--gray); color: var(--text); scroll-behavior: smooth; }
+
+        /* --- Auth Styling --- */
+        #auth-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1350&q=80');
+            background-size: cover; display: flex; justify-content: center; align-items: center; z-index: 1000;
+        }
+        .form-box { background: white; padding: 30px; border-radius: 12px; width: 350px; text-align: center; }
+        input { width: 90%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 5px; }
+        .btn { background: var(--gold); color: white; border: none; padding: 12px; width: 100%; cursor: pointer; border-radius: 5px; font-weight: bold; margin-top: 10px; }
+        
+        /* --- Landing Page --- */
+        #landing-page { display: none; }
+        nav { background: var(--dark); color: white; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        
+        .hero { height: 70vh; background: url('https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1350&q=80') center/cover; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center; }
+        .hero h1 { font-size: 3.5rem; margin: 0; }
+
+        .section-title { text-align: center; margin: 40px 0; font-size: 2rem; color: var(--dark); }
+
+        /* --- Rooms Grid --- */
+        .container { max-width: 1100px; margin: auto; padding: 20px; }
+        .rooms-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .room-card { background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); position: relative; }
+        .room-card img { width: 100%; height: 220px; object-fit: cover; }
+        .room-content { padding: 20px; }
+        .price { font-size: 1.2rem; color: var(--gold); font-weight: bold; }
+        .rating { color: #ffa500; font-size: 0.9rem; }
+        .book-icon { position: absolute; top: 15px; right: 15px; background: var(--gold); color: white; padding: 10px; border-radius: 50%; cursor: pointer; transition: 0.3s; }
+        .book-icon:hover { transform: scale(1.1); }
+
+        /* --- Facilities --- */
+        .facilities { display: flex; justify-content: space-around; background: var(--dark); color: white; padding: 40px 0; text-align: center; }
+        .fac-item i { font-size: 2rem; color: var(--gold); margin-bottom: 10px; }
+
+        /* --- Reviews --- */
+        .reviews { display: flex; gap: 20px; overflow-x: auto; padding: 20px 0; }
+        .review-card { min-width: 250px; background: white; padding: 20px; border-radius: 8px; border-left: 5px solid var(--gold); }
+
+        /* --- Modal --- */
+        #booking-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 200; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 30px; border-radius: 10px; width: 400px; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <div id="auth-container">
+        <div id="login-form" class="form-box">
+            <h2>Welcome Back</h2>
+            <input type="email" id="l-email" placeholder="Email">
+            <input type="password" id="l-pass" placeholder="Password">
+            <button class="btn" onclick="login()">Login</button>
+            <p onclick="toggleAuth(true)" style="cursor:pointer; font-size:0.8rem">New here? Sign Up</p>
+        </div>
+        <div id="signup-form" class="form-box" style="display:none">
+            <h2>Join Us</h2>
+            <input type="text" id="s-name" placeholder="Full Name">
+            <input type="email" id="s-email" placeholder="Email">
+            <input type="password" id="s-pass" placeholder="Password">
+            <button class="btn" onclick="signup()">Create Account</button>
+            <p onclick="toggleAuth(false)" style="cursor:pointer; font-size:0.8rem">Already member? Login</p>
+        </div>
+    </div>
+
+    <div id="landing-page">
+        <nav>
+            <h2 style="color:var(--gold)">GRAND HORIZON</h2>
+            <div>
+                <span id="user-name"></span>
+                <button onclick="logout()" style="margin-left:15px; background:transparent; color:white; border:1px solid white; padding:5px 10px; cursor:pointer">Logout</button>
+            </div>
+        </nav>
+
+        <header class="hero">
+            <h1>Sanctuary of Serenity</h1>
+            <p>Voted #1 Luxury Destination 2026</p>
+        </header>
+
+        <div class="container">
+            <h2 class="section-title">Our Premium Rooms</h2>
+            <div class="rooms-grid">
+                <div class="room-card">
+                    <div class="book-icon" onclick="openBooking('Executive Suite', '$250')"><i class="fas fa-calendar-plus"></i></div>
+                    <img src="https://images.unsplash.com/photo-1590490360182-c33d57733427?w=500">
+                    <div class="room-content">
+                        <div class="rating"><i class="fas fa-star"></i> 4.9 (120 reviews)</div>
+                        <h3>Executive Suite</h3>
+                        <p>High-speed WiFi, Mini Bar, City View.</p>
+                        <div class="price">$250 / night</div>
+                    </div>
+                </div>
+                <div class="room-card">
+                    <div class="book-icon" onclick="openBooking('Ocean Deluxe', '$400')"><i class="fas fa-calendar-plus"></i></div>
+                    <img src="https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=500">
+                    <div class="room-content">
+                        <div class="rating"><i class="fas fa-star"></i> 4.8 (85 reviews)</div>
+                        <h3>Ocean Deluxe</h3>
+                        <p>Private Balcony, King Size Bed, Spa Access.</p>
+                        <div class="price">$400 / night</div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="section-title">World Class Facilities</h2>
+        </div>
+
+        <section class="facilities">
+            <div class="fac-item"><i class="fas fa-swimming-pool"></i><p>Infinity Pool</p></div>
+            <div class="fac-item"><i class="fas fa-spa"></i><p>Luxury Spa</p></div>
+            <div class="fac-item"><i class="fas fa-utensils"></i><p>5-Star Dining</p></div>
+            <div class="fac-item"><i class="fas fa-dumbbell"></i><p>Fitness Center</p></div>
+        </section>
+
+        <div class="container">
+            <h2 class="section-title">Guest Reviews</h2>
+            <div class="reviews" id="reviews-container">
+                <div class="review-card">
+                    <p>"Absolutely stunning! The staff made me feel like royalty."</p>
+                    <strong>- Sarah J.</strong>
+                </div>
+                <div class="review-card">
+                    <p>"The best ocean view I have ever seen in my life."</p>
+                    <strong>- Mark T.</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="booking-modal">
+        <div class="modal-content">
+            <h2 id="modal-room-name"></h2>
+            <p>Confirm booking for <span id="modal-room-price"></span>?</p>
+            <input type="date" id="book-date">
+            <button class="btn" onclick="confirmBooking()">Confirm Reservation</button>
+            <button class="btn" style="background:#888" onclick="closeModal()">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        function toggleAuth(isSignup) {
+            document.getElementById('login-form').style.display = isSignup ? 'none' : 'block';
+            document.getElementById('signup-form').style.display = isSignup ? 'block' : 'none';
+        }
+
+        function signup() {
+            const user = {
+                name: document.getElementById('s-name').value,
+                email: document.getElementById('s-email').value,
+                pass: document.getElementById('s-pass').value
+            };
+            localStorage.setItem(user.email, JSON.stringify(user));
+            alert("Registration Successful!");
+            toggleAuth(false);
+        }
+
+        function login() {
+            const email = document.getElementById('l-email').value;
+            const pass = document.getElementById('l-pass').value;
+            const userData = JSON.parse(localStorage.getItem(email));
+
+            if(userData && userData.pass === pass) {
+                document.getElementById('auth-container').style.display = 'none';
+                document.getElementById('landing-page').style.display = 'block';
+                document.getElementById('user-name').innerText = "Hello, " + userData.name;
+                localStorage.setItem('currentUser', email);
+            } else {
+                alert("Wrong credentials!");
+            }
+        }
+
+        function openBooking(name, price) {
+            document.getElementById('modal-room-name').innerText = name;
+            document.getElementById('modal-room-price').innerText = price;
+            document.getElementById('booking-modal').style.display = 'flex';
+        }
+
+        function confirmBooking() {
+            const date = document.getElementById('book-date').value;
+            if(!date) return alert("Select a date!");
+            alert("Room Booked for " + date + "! Confirmation sent to your email.");
+            closeModal();
+        }
+
+        function closeModal() { document.getElementById('booking-modal').style.display = 'none'; }
+        function logout() { location.reload(); }
+    </script>
+</body>
+</html>
